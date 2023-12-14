@@ -218,6 +218,17 @@ void TenSEALContext::decrypt(const SecretKey& sk, const Ciphertext& encrypted,
     return decryptor.decrypt(encrypted, destination);
 }
 
+void TenSEALContext::decryption_share(const Ciphertext& encrypted,
+                             Plaintext& destination) const {
+    return this->decryptor()->decryption_share(encrypted, destination);
+}
+void TenSEALContext::decryption_share(const SecretKey& sk, const Ciphertext& encrypted,
+                             Plaintext& destination) const {
+    Decryptor decryptor = Decryptor(*this->seal_context(), sk);
+
+    return decryptor.decryption_share(encrypted, destination);
+}
+
 bool TenSEALContext::has_public_key() const {
     if (this->_encryption_type == encryption_type::symmetric)
         throw invalid_argument(

@@ -48,6 +48,9 @@ class CKKSVector(AbstractTensor):
 
     def decrypt(self, secret_key: "ts.enc_context.SecretKey" = None) -> List[float]:
         return self._decrypt(secret_key=secret_key)
+    
+    def decryption_share(self, secret_key: "ts.enc_context.SecretKey" = None) -> List[float]:
+        return self._decryption_share(secret_key=secret_key)
 
     def size(self) -> int:
         return self.data.size()

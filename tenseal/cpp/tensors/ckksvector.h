@@ -32,6 +32,12 @@ class CKKSVector
     plain_t decrypt(const shared_ptr<SecretKey>& sk) const override;
 
     /**
+     * Returns the decryption share for mk ckks
+     *of real numbers using the secret-key.
+     **/
+    plain_t decryption_share(const shared_ptr<SecretKey>& sk) const ;
+
+    /**
      * Compute the power of the CKKSVector with minimal multiplication depth.
      **/
     encrypted_t power_inplace(unsigned int power) override;

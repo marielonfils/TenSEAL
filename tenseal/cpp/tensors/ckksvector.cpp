@@ -116,6 +116,30 @@ CKKSVector::plain_t CKKSVector::decrypt(const shared_ptr<SecretKey>& sk) const {
     return result;
 }
 
+CKKSVector::plain_t CKKSVector::decryption_share(const shared_ptr<SecretKey>& sk) const {
+    vector<double> result;
+    result.reserve(this->size());
+
+    for (size_t idx = 0; idx < this->_ciphertexts.size(); ++idx) {
+        vector<double> partial_result;
+        partial_result.reserve(this->_sizes[idx]);
+        Plaintext plaintext;
+
+        this->tenseal_context()->decryption_share(*sk, this->_ciphertexts[idx],
+                                         plaintext);
+        this->tenseal_context()->decode<CKKSEncoder>(plaintext, partial_result);
+
+        // result contains all slots of ciphertext (n/2), but we may be using
+        // less we use the size to delimit the resulting plaintext vector
+        auto partial_decr =
+            vector<double>(partial_result.cbegin(),
+                           partial_result.cbegin() + this->_sizes[idx]);
+        result.insert(result.end(), partial_decr.begin(), partial_decr.end());
+    }
+
+    return result;
+}
+
 shared_ptr<CKKSVector> CKKSVector::power_inplace(unsigned int power) {
     // if the power is zero, return a new encrypted vector of ones
     if (power == 0) {

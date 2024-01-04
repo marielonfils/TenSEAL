@@ -308,6 +308,20 @@ void bind_ckks_vector(py::module &m) {
              }),
              py::call_guard<py::scoped_ostream_redirect,
                             py::scoped_estream_redirect>())
+        // specifying scale
+        .def(py::init([](const shared_ptr<TenSEALContext> &ctx,
+                         const Ciphertext &data, double scale) {
+                 return CKKSVector::Create(ctx, data, scale);
+             }),
+             py::call_guard<py::scoped_ostream_redirect,
+                            py::scoped_estream_redirect>())
+        // using global_scale if set
+        .def(py::init([](const shared_ptr<TenSEALContext> &ctx,
+                         const Ciphertext &data) {
+                 return CKKSVector::Create(ctx, data);
+             }),
+             py::call_guard<py::scoped_ostream_redirect,
+                            py::scoped_estream_redirect>())
         .def(py::init([](const shared_ptr<TenSEALContext> &ctx,
                          const std::string &data) {
                  return CKKSVector::Create(ctx, data);
@@ -323,6 +337,27 @@ void bind_ckks_vector(py::module &m) {
              [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
                  return obj->decrypt(sk).data();
              })
+        //.def("decrypt2",
+             //[](shared_ptr<CKKSVector> obj) { return obj->decrypt2().data(); })
+        .def("decrypt2",
+             [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
+                 return obj->decrypt2(sk).data();
+             })
+         //TODO correct no sk
+        //.def("decryption_share",
+             //[](shared_ptr<CKKSVector> obj) { return obj->decryption_share().data(); })
+        .def("decryption_share",
+             [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
+                 return obj->decryption_share(sk).data();
+             })
+        .def("decryption_share2",
+             [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
+                 return obj->decryption_share2(sk);
+             })
+        .def("add_share2",
+             [](shared_ptr<CKKSVector> obj,shared_ptr<Plaintext> &other) {
+                 return obj->add_share_inplace(*other.get());
+             })
         .def("neg", &CKKSVector::negate)
         .def("neg_", &CKKSVector::negate_inplace)
         .def("square", &CKKSVector::square)
@@ -331,6 +366,7 @@ void bind_ckks_vector(py::module &m) {
         .def("pow_", &CKKSVector::power_inplace)
         .def("add", &CKKSVector::add)
         .def("add_", &CKKSVector::add_inplace)
+        .def("add_share", &CKKSVector::add_share_inplace)
         .def("add_plain", py::overload_cast<const double &>(
                               &CKKSVector::add_plain, py::const_))
         .def("add_plain",

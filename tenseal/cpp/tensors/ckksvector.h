@@ -3,6 +3,7 @@
 
 #include "tenseal/cpp/tensors/encrypted_vector.h"
 #include "tenseal/proto/tensors.pb.h"
+#include <iostream>
 
 namespace tenseal {
 
@@ -30,12 +31,15 @@ class CKKSVector
      *of real numbers using the secret-key.
      **/
     plain_t decrypt(const shared_ptr<SecretKey>& sk) const override;
+    plain_t decrypt2(const shared_ptr<SecretKey>& sk) const;
 
     /**
      * Returns the decryption share for mk ckks
      *of real numbers using the secret-key.
      **/
     plain_t decryption_share(const shared_ptr<SecretKey>& sk) const ;
+    vector<Plaintext> decryption_share2(const shared_ptr<SecretKey>& sk) const ;
+
 
     /**
      * Compute the power of the CKKSVector with minimal multiplication depth.
@@ -76,6 +80,7 @@ class CKKSVector
      **/
     encrypted_t add_plain_inplace(const plain_t::dtype& to_add) override;
     encrypted_t add_plain_inplace(const plain_t& to_add) override;
+    encrypted_t add_share_inplace(Plaintext& to_add);
     encrypted_t sub_plain_inplace(const plain_t::dtype& to_sub) override;
     encrypted_t sub_plain_inplace(const plain_t& to_sub) override;
     encrypted_t mul_plain_inplace(const plain_t::dtype& to_mul) override;
@@ -133,12 +138,15 @@ class CKKSVector
     */
     template <typename T>
     void _add_plain_inplace(Ciphertext& ct, const T& to_add);
+    void _add_share_inplace(Ciphertext& ct, Plaintext& to_add);
     template <typename T>
     void _sub_plain_inplace(Ciphertext& ct, const T& to_sub);
     template <typename T>
     void _mul_plain_inplace(Ciphertext& ct, const T& to_mul);
 
     CKKSVector(const shared_ptr<TenSEALContext>& ctx, const plain_t& vec,
+               optional<double> scale = {});
+    CKKSVector(const shared_ptr<TenSEALContext>& ctx, const Ciphertext &vec,
                optional<double> scale = {});
     CKKSVector(const shared_ptr<TenSEALContext>& ctx, const string& vec);
     CKKSVector(const string& vec);

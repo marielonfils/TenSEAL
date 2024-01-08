@@ -20,6 +20,11 @@ void bind_seal_encrypt_decrypt(pybind11::module &m) {
     py::class_<PublicKey, std::shared_ptr<PublicKey>>(m, "PublicKey",
                                                       py::module_local())
         .def(py::init<>())
+        .def(py::init([](const Ciphertext &ciphertext) {
+                 return PublicKey(ciphertext);
+             }),
+             py::call_guard<py::scoped_ostream_redirect,
+                            py::scoped_estream_redirect>())
         .def("data", py::overload_cast<>(&PublicKey::data, py::const_),
              py::return_value_policy::reference)
         .def("parms_id", py::overload_cast<>(&PublicKey::parms_id, py::const_))
@@ -244,6 +249,7 @@ void bind_seal_encrypt_decrypt(pybind11::module &m) {
         .def(py::init<const SEALContext &>())
         .def(py::init<const SEALContext &, parms_id_type>())
         .def(py::init<const SEALContext &, parms_id_type, std::size_t>())
+        .def("__len__", &Ciphertext::size) // to use ciphertext initialization for CKKSVector
         .def("reserve",
              py::overload_cast<const SEALContext &, parms_id_type, std::size_t>(
                  &Ciphertext::reserve))

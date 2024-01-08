@@ -155,7 +155,7 @@ shared_ptr<BFVVector> BFVVector::square_inplace() {
 }
 
 shared_ptr<BFVVector> BFVVector::add_inplace(
-    const shared_ptr<BFVVector>& other) {
+    const shared_ptr<BFVVector>& other, bool pk) {
     auto to_add = other->copy();
     if (!this->tenseal_context()->equals(to_add->tenseal_context())) {
         // Different contexts means different parameters

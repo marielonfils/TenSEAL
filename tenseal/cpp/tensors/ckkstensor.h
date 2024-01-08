@@ -34,7 +34,7 @@ class CKKSTensor : public EncryptedTensor<double, shared_ptr<CKKSTensor>>,
     shared_ptr<CKKSTensor> power_inplace(unsigned int power) override;
 
     shared_ptr<CKKSTensor> add_inplace(
-        const shared_ptr<CKKSTensor>& to_add) override;
+        const shared_ptr<CKKSTensor>& to_add, bool pk=false) override;
     shared_ptr<CKKSTensor> sub_inplace(
         const shared_ptr<CKKSTensor>& to_sub) override;
     shared_ptr<CKKSTensor> mul_inplace(

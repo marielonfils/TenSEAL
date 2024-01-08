@@ -66,10 +66,10 @@ class EncryptedTensor {
      *an element-wise fashion. in_place functions return a reference to the same
      *object.
      **/
-    encrypted_t add(const encrypted_t& to_add) const {
-        return this->copy()->add_inplace(to_add);
+    encrypted_t add(const encrypted_t& to_add, bool pk=false) const {
+        return this->copy()->add_inplace(to_add, pk);
     };
-    virtual encrypted_t add_inplace(const encrypted_t& to_add) = 0;
+    virtual encrypted_t add_inplace(const encrypted_t& to_add, bool pk) = 0;
     encrypted_t sub(encrypted_t to_sub) const {
         return this->copy()->sub_inplace(to_sub);
     };

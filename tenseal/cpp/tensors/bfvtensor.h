@@ -34,7 +34,7 @@ class BFVTensor : public EncryptedTensor<int64_t, shared_ptr<BFVTensor>>,
     shared_ptr<BFVTensor> power_inplace(unsigned int power) override;
 
     shared_ptr<BFVTensor> add_inplace(
-        const shared_ptr<BFVTensor>& to_add) override;
+        const shared_ptr<BFVTensor>& to_add, bool pk=false) override;
     shared_ptr<BFVTensor> sub_inplace(
         const shared_ptr<BFVTensor>& to_sub) override;
     shared_ptr<BFVTensor> mul_inplace(

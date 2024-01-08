@@ -52,7 +52,7 @@ class BFVVector
      *addition, substraction or multiplication in an element-wise fashion.
      *in_place functions return a reference to the same object.
      **/
-    encrypted_t add_inplace(const encrypted_t& to_add) override;
+    encrypted_t add_inplace(const encrypted_t& to_add, bool pk=false) override;
     encrypted_t sub_inplace(const encrypted_t& to_sub) override;
     encrypted_t mul_inplace(const encrypted_t& to_mul) override;
     encrypted_t dot_inplace(const encrypted_t& to_mul) override;

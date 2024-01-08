@@ -246,7 +246,7 @@ shared_ptr<CKKSVector> CKKSVector::square_inplace() {
 }
 
 shared_ptr<CKKSVector> CKKSVector::add_inplace(
-    const shared_ptr<CKKSVector>& other) {
+    const shared_ptr<CKKSVector>& other, bool pk) {
     auto to_add = other;
     if (!this->tenseal_context()->equals(to_add->tenseal_context())) {
         // Different contexts means different parameters
@@ -260,7 +260,7 @@ shared_ptr<CKKSVector> CKKSVector::add_inplace(
         this->auto_same_mod(to_add->_ciphertexts[idx], _ciphertexts[idx]);
 
         this->tenseal_context()->evaluator->add_inplace(
-            this->_ciphertexts[idx], to_add->_ciphertexts[idx]);
+            this->_ciphertexts[idx], to_add->_ciphertexts[idx], pk);
     }
     return shared_from_this();
 }

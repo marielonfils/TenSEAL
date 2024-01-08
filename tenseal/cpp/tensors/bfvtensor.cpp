@@ -278,7 +278,7 @@ shared_ptr<BFVTensor> BFVTensor::op_plain_inplace(const int64_t& operand,
 }
 
 shared_ptr<BFVTensor> BFVTensor::add_inplace(
-    const shared_ptr<BFVTensor>& to_add) {
+    const shared_ptr<BFVTensor>& to_add,bool pk) {
     return this->op_inplace(to_add, OP::ADD);
 }
 

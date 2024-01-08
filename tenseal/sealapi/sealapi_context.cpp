@@ -20,7 +20,7 @@ void bind_seal_context(pybind11::module &m) {
         .value("NONE", scheme_type::none)
         .value("BFV", scheme_type::bfv)
         .value("CKKS", scheme_type::ckks);
-
+        
     py::class_<EncryptionParameters>(m, "EncryptionParameters",
                                      py::module_local())
         .def(py::init<scheme_type>())

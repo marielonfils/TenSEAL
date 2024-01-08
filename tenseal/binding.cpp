@@ -65,6 +65,8 @@ void bind_context(py::module &m) {
         encryption_type : switch between public key and symmetric encryption. Default set to public key encryption.
         n_threads : Optional: number of threads to use for multiplications.
         )")
+        .def("parms", &TenSEALContext::parms)
+        .def("set_publickey", &TenSEALContext::set_publickey)
         .def("seal_context", &TenSEALContext::seal_context)
         .def("encryptor", &TenSEALContext::encryptor)
         .def("decryptor", &TenSEALContext::decryptor)

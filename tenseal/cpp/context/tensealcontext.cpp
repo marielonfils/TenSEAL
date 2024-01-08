@@ -241,6 +241,14 @@ void TenSEALContext::decryption_share(const SecretKey& sk, const Ciphertext& enc
     return decryptor.decryption_share(encrypted, destination);
 }
 
+void TenSEALContext::set_publickey(const PublicKey& public_key) {
+    if (this->_encryption_type == encryption_type::symmetric)
+        throw invalid_argument(
+            "set_public_key is not supported for symmetric encryption");
+
+    this->_public_key = make_shared<PublicKey>(public_key);
+}
+
 bool TenSEALContext::has_public_key() const {
     if (this->_encryption_type == encryption_type::symmetric)
         throw invalid_argument(

@@ -307,7 +307,7 @@ shared_ptr<CKKSTensor> CKKSTensor::op_plain_inplace(const double& operand,
 }
 
 shared_ptr<CKKSTensor> CKKSTensor::add_inplace(
-    const shared_ptr<CKKSTensor>& to_add) {
+    const shared_ptr<CKKSTensor>& to_add, bool pk) {
     return this->op_inplace(to_add, OP::ADD);
 }
 

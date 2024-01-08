@@ -177,6 +177,11 @@ class TenSEALContext {
     void decryption_share(const Ciphertext& encrypted, Plaintext& destination) const;
     void decryption_share(const SecretKey& sk, const Ciphertext& encrypted,
                  Plaintext& destination) const;
+    
+
+    //TODO comments
+    void set_publickey(const PublicKey& pk);
+
     /**
      * Template encoding function for the encoders.
      **/

@@ -121,6 +121,10 @@ class AbstractTensor(ABC):
         self, ds    ):
         #TOOD check if correct scheme type
         return self.data.add_share(ds)
+    
+    def _add_pk(self, pk):
+        return self.data.add(pk,True)
+
     @classmethod
     def _get_operand(cls, other, dtype: str = "float") -> Union[int, float, "ts._ts_cpp.Tensor"]:
         """Extract the appropriate operand the tensor can operate with"""

@@ -30,17 +30,21 @@ class CKKSVector(AbstractTensor):
             self.data = data
         # constructing a new object
         else:
+            print("hello", context, vector, scale,data, isinstance(vector, list))
+            
             if not isinstance(context, ts.Context):
-                raise TypeError("context must be a tenseal.Context")
-            if not isinstance(vector, ts.PlainTensor):
-                vector = ts.plain_tensor(vector, dtype="float")
-            if len(vector.shape) != 1:
-                raise ValueError("can only encrypt a vector")
-            vector = vector.raw
-
+                raise TypeError("context must be a tenseal.Context")            
+            if not isinstance(vector,ts._ts_cpp.Ciphertext):
+                if not isinstance(vector, ts.PlainTensor):
+                    vector = ts.plain_tensor(vector, dtype="float")
+                if len(vector.shape) != 1:
+                    raise ValueError("can only encrypt a vector")
+                vector = vector.raw
             if scale is None:
+                print("here ", type(vector), vector)
                 self.data = ts._ts_cpp.CKKSVector(context.data, vector)
             else:
+                print("here2 ", type(vector), vector)
                 self.data = ts._ts_cpp.CKKSVector(context.data, vector, scale)
 
     def scale(self) -> float:
@@ -49,8 +53,20 @@ class CKKSVector(AbstractTensor):
     def decrypt(self, secret_key: "ts.enc_context.SecretKey" = None) -> List[float]:
         return self._decrypt(secret_key=secret_key)
     
+    def decrypt2(self, secret_key: "ts.enc_context.SecretKey" = None) -> List[float]:
+        return self._decrypt2(secret_key=secret_key)
+    
     def decryption_share(self, secret_key: "ts.enc_context.SecretKey" = None) -> List[float]:
         return self._decryption_share(secret_key=secret_key)
+    
+    def decryption_share2(self, secret_key: "ts.enc_context.SecretKey" = None)  -> List[float]:
+        return self._decryption_share2(secret_key=secret_key)
+
+    def add_share(self, ds):
+        return self._add_share(ds)
+    
+    def add_share2(self, ds):
+        return self._add_share(ds)
 
     def size(self) -> int:
         return self.data.size()
@@ -92,8 +108,14 @@ class CKKSVector(AbstractTensor):
 
     def add(self, other) -> "CKKSVector":
         other = self._get_operand(other, dtype="float")
-        result = self.data + other
+        result = self.data.add(other,False) #self.data + other
         return self._wrap(result)
+    
+    def add_pk(self, other) -> "CKKSVector":
+        other = self._get_operand(other, dtype="float")
+        result = self._add_pk(other)
+        return self._wrap(result)
+        
 
     def add_(self, other) -> "CKKSVector":
         other = self._get_operand(other, dtype="float")

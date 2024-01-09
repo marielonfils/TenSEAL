@@ -19,7 +19,8 @@ void bind_seal_context(pybind11::module &m) {
     py::enum_<scheme_type>(m, "SCHEME_TYPE", py::module_local())
         .value("NONE", scheme_type::none)
         .value("BFV", scheme_type::bfv)
-        .value("CKKS", scheme_type::ckks);
+        .value("CKKS", scheme_type::ckks)
+        .value("MK_CKKS", scheme_type::mk_ckks);
         
     py::class_<EncryptionParameters>(m, "EncryptionParameters",
                                      py::module_local())

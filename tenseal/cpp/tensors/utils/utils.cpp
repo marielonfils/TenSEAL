@@ -37,6 +37,11 @@ Ciphertext &sum_vector(shared_ptr<TenSEALContext> tenseal_context,
                     encrypted, steps, galois_keys, destination);
                 break;
             }
+            case scheme_type::mk_ckks: {
+                tenseal_context->evaluator->rotate_vector(
+                    encrypted, steps, galois_keys, destination);
+                break;
+            }
             case scheme_type::bfv: {
                 tenseal_context->evaluator->rotate_rows(
                     encrypted, steps, galois_keys, destination);

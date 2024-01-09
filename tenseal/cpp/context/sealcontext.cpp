@@ -41,6 +41,17 @@ EncryptionParameters create_ckks_parameters(size_t poly_modulus_degree,
     return parameters;
 }
 
+EncryptionParameters create_mk_ckks_parameters(size_t poly_modulus_degree,
+                                            vector<int> coeff_mod_bit_sizes) {
+    EncryptionParameters parameters(scheme_type::mk_ckks);
+    parameters.set_poly_modulus_degree(poly_modulus_degree);
+    
+    parameters.set_coeff_modulus(
+        CoeffModulus::Create(poly_modulus_degree, coeff_mod_bit_sizes));
+
+    return parameters;
+}
+
 SEALContext create_context(EncryptionParameters parms) {
     return SEALContext(parms);
 }

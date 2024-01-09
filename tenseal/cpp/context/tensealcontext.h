@@ -170,14 +170,16 @@ class TenSEALContext {
     void mk_decrypt(const Ciphertext& encrypted, Plaintext& destination) const;
 
     /**
-     * Decryption share of a Ciphertext
+     * Decryption share of a Ciphertext for MK_CKKS
      * */
     void decryption_share(const Ciphertext& encrypted, Plaintext& destination) const;
     void decryption_share(const SecretKey& sk, const Ciphertext& encrypted,
                  Plaintext& destination) const;
     
 
-    //TODO comments
+    /**
+     * Set the public key for the current context for MK_CKKS.
+     * */
     void set_publickey(const PublicKey& pk);
 
     /**

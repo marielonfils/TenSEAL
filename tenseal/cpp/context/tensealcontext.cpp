@@ -139,6 +139,11 @@ shared_ptr<TenSEALContext> TenSEALContext::Create(
             parms = create_ckks_parameters(poly_modulus_degree,
                                            coeff_mod_bit_sizes);
             break;
+        
+        case scheme_type::mk_ckks:
+            parms = create_mk_ckks_parameters(poly_modulus_degree,
+                                           coeff_mod_bit_sizes);
+            break;
 
         default:
             throw invalid_argument("invalid scheme_type");
@@ -220,7 +225,7 @@ void TenSEALContext::decrypt(const SecretKey& sk, const Ciphertext& encrypted,
 
 void TenSEALContext::mk_decrypt(const Ciphertext& encrypted,
                              Plaintext& destination) const {
-    return this->decryptor()->mk_decrypt(encrypted, destination);
+    return this->decryptor()->decrypt(encrypted, destination);
 }
 
 void TenSEALContext::decryption_share(const Ciphertext& encrypted,
@@ -238,6 +243,9 @@ void TenSEALContext::set_publickey(const PublicKey& public_key) {
     if (this->_encryption_type == encryption_type::symmetric)
         throw invalid_argument(
             "set_public_key is not supported for symmetric encryption");
+    if (this->_parms.scheme() != scheme_type::mk_ckks)
+        throw invalid_argument(
+            "set_public_key is only supported for MK_CKKS encryption");
 
     this->_public_key = make_shared<PublicKey>(public_key);
 }

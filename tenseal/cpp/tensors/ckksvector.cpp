@@ -163,8 +163,7 @@ vector<Plaintext> CKKSVector::decryption_share() const {
         }
         return this->decryption_share(this->tenseal_context()->secret_key());
     };    
-
-    //todo virtual
+    
 vector<Plaintext> CKKSVector::decryption_share(const shared_ptr<SecretKey>& sk) const {
     vector<Plaintext> result;
     result.reserve(this->size());

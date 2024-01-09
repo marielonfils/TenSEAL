@@ -57,7 +57,7 @@ void bind_context(py::module &m) {
                  &TenSEALContext::Create),
              R"(Create a new TenSEALContext object to hold keys and parameters.
     Args:
-        scheme : define the scheme to be used, either SCHEME_TYPE.BFV or SCHEME_TYPE.CKKS.
+        scheme : define the scheme to be used, either SCHEME_TYPE.BFV or SCHEME_TYPE.CKKS or SCHEME_TYPE.MK_CKKS.
         poly_modulus_degree : The degree of the polynomial modulus, must be a power of two.
         plain_modulus : The plaintext modulus. Is not used if scheme is CKKS.
         coeff_mod_bit_sizes : List of bit size for each coeffecient modulus.
@@ -341,11 +341,6 @@ void bind_ckks_vector(py::module &m) {
              })
         .def("mk_decrypt",
              [](shared_ptr<CKKSVector> obj) { return obj->mk_decrypt().data(); })
-        //.def("mk_decrypt",
-        //     [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
-        //         return obj->mk_decrypt(sk).data();
-        //     })
-         //TODO correct no sk
         .def("decryption_share",
              [](shared_ptr<CKKSVector> obj) { return obj->decryption_share()[0]; })
         .def("decryption_share",

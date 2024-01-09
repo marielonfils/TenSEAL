@@ -17,6 +17,7 @@ class SCHEME_TYPE(Enum):
     NONE = ts._ts_cpp.SCHEME_TYPE.NONE
     BFV = ts._ts_cpp.SCHEME_TYPE.BFV
     CKKS = ts._ts_cpp.SCHEME_TYPE.CKKS
+    MK_CKKS = ts._ts_cpp.SCHEME_TYPE.MK_CKKS
 
 
 SEAL_PRIMITIVE = Union[
@@ -101,7 +102,7 @@ class Context:
         encrypted tensors using either BFV or CKKS scheme.
 
         Args:
-            scheme : define the scheme to be used, either SCHEME_TYPE.BFV or SCHEME_TYPE.CKKS.
+            scheme : define the scheme to be used, either SCHEME_TYPE.BFV or SCHEME_TYPE.CKKS or SCHEME_TYPE.MK_CKKS.
             poly_modulus_degree: The degree of the polynomial modulus, must be a power of two.
             plain_modulus: The plaintext modulus. Should not be passed when the scheme is CKKS.
             coeff_mod_bit_sizes: List of bit size for each coeffecient modulus.
@@ -127,9 +128,14 @@ class Context:
         elif scheme == SCHEME_TYPE.CKKS:
             # must be int, but the value doesn't matter for ckks
             plain_modulus = 0
+        
+        elif scheme == SCHEME_TYPE.MK_CKKS:
+            # must be int, but the value doesn't matter for ckks
+            plain_modulus = 0
+
 
         else:
-            raise ValueError("Invalid scheme type, use either SCHEME_TYPE.BFV or SCHEME_TYPE.CKKS")
+            raise ValueError("Invalid scheme type, use either SCHEME_TYPE.BFV or SCHEME_TYPE.CKKS or SCHEME_TYPE.MK_CKKS")
 
         # We can't pass None here, everything should be set prior to this call
         if not (isinstance(n_threads, int) and n_threads > 0):

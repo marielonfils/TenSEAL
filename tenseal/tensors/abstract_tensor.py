@@ -87,15 +87,11 @@ class AbstractTensor(ABC):
             return self.data.decrypt(secret_key.data)
         else:
             raise TypeError(f"incorrect type: {type(secret_key)} != SecretKey")
-    def _decrypt2(
-        self, secret_key: "ts.enc_context.SecretKey" = None
-    ) -> Union[ts._ts_cpp.PlainTensorDouble, ts._ts_cpp.PlainTensorInt64, List[float], List[int]]:
-        if secret_key is None:
-            return self.data.decrypt2()
-        elif isinstance(secret_key, ts.enc_context.SecretKey):
-            return self.data.decrypt2(secret_key.data)
-        else:
-            raise TypeError(f"incorrect type: {type(secret_key)} != SecretKey")
+    def _mk_decrypt(
+        self
+    ) -> Union[ts._ts_cpp.PlainTensorDouble, ts._ts_cpp.PlainTensorInt64, List[float], List[int]]:        
+        return self.data.mk_decrypt()
+        
     def _decryption_share(
         self, secret_key: "ts.enc_context.SecretKey" = None
     ) -> Union[ts._ts_cpp.PlainTensorDouble, ts._ts_cpp.PlainTensorInt64, List[float], List[int]]:
@@ -104,16 +100,6 @@ class AbstractTensor(ABC):
             return self.data.decryption_share()
         elif isinstance(secret_key, ts.enc_context.SecretKey):
             return self.data.decryption_share(secret_key.data)
-        else:
-            raise TypeError(f"incorrect type: {type(secret_key)} != SecretKey")
-    def _decryption_share2(
-        self, secret_key: "ts.enc_context.SecretKey" = None
-    ) -> Union[ts._ts_cpp.PlainTensorDouble, ts._ts_cpp.PlainTensorInt64, List[float], List[int]]:
-        #TOOD check if correct scheme type
-        if secret_key is None:
-            return self.data.decryption_share2()
-        elif isinstance(secret_key, ts.enc_context.SecretKey):
-            return self.data.decryption_share2(secret_key.data)
         else:
             raise TypeError(f"incorrect type: {type(secret_key)} != SecretKey")
     

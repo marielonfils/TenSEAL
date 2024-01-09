@@ -218,16 +218,9 @@ void TenSEALContext::decrypt(const SecretKey& sk, const Ciphertext& encrypted,
     return decryptor.decrypt(encrypted, destination);
 }
 
-void TenSEALContext::decrypt2(const Ciphertext& encrypted,
+void TenSEALContext::mk_decrypt(const Ciphertext& encrypted,
                              Plaintext& destination) const {
-    return this->decryptor()->decrypt2(encrypted, destination);
-}
-
-void TenSEALContext::decrypt2(const SecretKey& sk, const Ciphertext& encrypted,
-                             Plaintext& destination) const {
-    Decryptor decryptor = Decryptor(*this->seal_context(), sk);
-
-    return decryptor.decrypt2(encrypted, destination);
+    return this->decryptor()->mk_decrypt(encrypted, destination);
 }
 
 void TenSEALContext::decryption_share(const Ciphertext& encrypted,

@@ -102,7 +102,7 @@ class EncryptedTensor {
     virtual encrypted_t add_plain_inplace(const plain_data_t& to_add) = 0;
     virtual encrypted_t add_plain_inplace(
         const PlainTensor<plain_data_t>& to_add) = 0;
-
+            
     encrypted_t sub_plain(const plain_data_t& to_sub) const {
         return this->copy()->sub_plain_inplace(to_sub);
     };

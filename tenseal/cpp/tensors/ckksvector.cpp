@@ -8,7 +8,6 @@ namespace tenseal {
 CKKSVector::CKKSVector(const shared_ptr<TenSEALContext>& ctx,
                        const CKKSVector::plain_t& vec,
                        std::optional<double> scale) {
-    cout << "first line in ckksvector.cpp 1" << endl;
     this->link_tenseal_context(ctx);
     if (scale.has_value()) {
         this->_init_scale = scale.value();
@@ -48,7 +47,6 @@ CKKSVector::CKKSVector(const shared_ptr<TenSEALContext>& ctx,
 CKKSVector::CKKSVector(const shared_ptr<TenSEALContext>& ctx,
                        const Ciphertext& vec,
                        std::optional<double> scale) {
-    cout << "first line in ckksvector.cpp 2" << endl;
     this->link_tenseal_context(ctx);
     if (scale.has_value()) {
         this->_init_scale = scale.value();
@@ -59,36 +57,30 @@ CKKSVector::CKKSVector(const shared_ptr<TenSEALContext>& ctx,
     this->_ciphertexts = vector<Ciphertext>();
     this->_sizes = vector<size_t>();
     this->_ciphertexts.push_back(vec);
-    cout << "in ckksvector.cpp" << endl;
-    cout << "vec.size() = " << vec.size() << endl;
     this->_sizes.push_back(vec.size());
 }
 
 CKKSVector::CKKSVector(const shared_ptr<TenSEALContext>& ctx,
                        const string& vec) {
-                        cout << "first line in ckksvector.cpp 3" << endl;
     this->link_tenseal_context(ctx);
     this->load(vec);
 }
 
-CKKSVector::CKKSVector(const string& vec) { cout << "first line in ckksvector.cpp4" << endl;this->load(vec); }
+CKKSVector::CKKSVector(const string& vec) { this->load(vec); }
 
 CKKSVector::CKKSVector(const TenSEALContextProto& ctx,
                        const CKKSVectorProto& vec) {
-                        cout << "first line in ckksvector.cpp 5" << endl;
     this->load_context_proto(ctx);
     this->load_proto(vec);
 }
 
 CKKSVector::CKKSVector(const shared_ptr<TenSEALContext>& ctx,
                        const CKKSVectorProto& vec) {
-                        cout << "first line in ckksvector.cpp 6" << endl;
     this->link_tenseal_context(ctx);
     this->load_proto(vec);
 }
 
 CKKSVector::CKKSVector(const shared_ptr<const CKKSVector>& vec) {
-    cout << "first line in ckksvector.cpp7" << endl;
     this->link_tenseal_context(vec->tenseal_context());
     this->_init_scale = vec->scale();
     this->_sizes = vec->chunked_size();
@@ -139,7 +131,7 @@ CKKSVector::plain_t CKKSVector::decrypt(const shared_ptr<SecretKey>& sk) const {
     return result;
 }
 
-CKKSVector::plain_t CKKSVector::decrypt2(const shared_ptr<SecretKey>& sk) const {
+CKKSVector::plain_t CKKSVector::mk_decrypt() const {
     vector<double> result;
     result.reserve(this->size());
 
@@ -147,7 +139,7 @@ CKKSVector::plain_t CKKSVector::decrypt2(const shared_ptr<SecretKey>& sk) const 
         vector<double> partial_result;
         partial_result.reserve(this->_sizes[idx]);
         Plaintext plaintext;
-        this->tenseal_context()->decrypt2(*sk, this->_ciphertexts[idx],
+        this->tenseal_context()->mk_decrypt( this->_ciphertexts[idx],
                                          plaintext);
         this->tenseal_context()->decode<CKKSEncoder>(plaintext, partial_result);
 
@@ -162,31 +154,18 @@ CKKSVector::plain_t CKKSVector::decrypt2(const shared_ptr<SecretKey>& sk) const 
     return result;
 }
 
-CKKSVector::plain_t CKKSVector::decryption_share(const shared_ptr<SecretKey>& sk) const {
-    vector<double> result;
-    result.reserve(this->size());
+vector<Plaintext> CKKSVector::decryption_share() const {
+        if (this->tenseal_context()->is_public()) {
+            // this->context was loaded with public keys only
+            throw invalid_argument(
+                "the current context of the tensor doesn't hold a secret_key, "
+                "please provide one as argument");
+        }
+        return this->decryption_share(this->tenseal_context()->secret_key());
+    };    
 
-    for (size_t idx = 0; idx < this->_ciphertexts.size(); ++idx) {
-        vector<double> partial_result;
-        partial_result.reserve(this->_sizes[idx]);
-        Plaintext plaintext;
-
-        this->tenseal_context()->decryption_share(*sk, this->_ciphertexts[idx],
-                                         plaintext);
-        this->tenseal_context()->decode<CKKSEncoder>(plaintext, partial_result);
-
-        // result contains all slots of ciphertext (n/2), but we may be using
-        // less we use the size to delimit the resulting plaintext vector
-        auto partial_decr =
-            vector<double>(partial_result.cbegin(),
-                           partial_result.cbegin() + this->_sizes[idx]);
-        result.insert(result.end(), partial_decr.begin(), partial_decr.end());
-    }
-
-    return result;
-}
-
-vector<Plaintext> CKKSVector::decryption_share2(const shared_ptr<SecretKey>& sk) const {
+    //todo virtual
+vector<Plaintext> CKKSVector::decryption_share(const shared_ptr<SecretKey>& sk) const {
     vector<Plaintext> result;
     result.reserve(this->size());
 
@@ -368,6 +347,10 @@ shared_ptr<CKKSVector> CKKSVector::add_plain_inplace(const double& to_add) {
     for (auto& ct : this->_ciphertexts) this->_add_plain_inplace(ct, to_add);
     return shared_from_this();
 }
+
+shared_ptr<CKKSVector> CKKSVector::add_share(Plaintext& to_add) const {
+        return this->copy()->add_share_inplace(to_add);
+    };
 
 shared_ptr<CKKSVector> CKKSVector::add_share_inplace(Plaintext& to_add) {
     for (auto& ct : this->_ciphertexts) this->_add_share_inplace(ct, to_add);

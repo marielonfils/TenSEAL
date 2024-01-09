@@ -20,7 +20,7 @@ class CKKSVector
    public:
     using encrypted_t = shared_ptr<CKKSVector>;
     using plain_t = PlainTensor<double>;
-    using EncryptedVector<double, shared_ptr<CKKSVector>, CKKSEncoder>::decrypt; //TODO for decrypt2
+    using EncryptedVector<double, shared_ptr<CKKSVector>, CKKSEncoder>::decrypt; //TODO for mk_decrypt
 
     template <typename... Args>
     static encrypted_t Create(Args&&... args) {
@@ -31,14 +31,14 @@ class CKKSVector
      *of real numbers using the secret-key.
      **/
     plain_t decrypt(const shared_ptr<SecretKey>& sk) const override;
-    plain_t decrypt2(const shared_ptr<SecretKey>& sk) const;
+    plain_t mk_decrypt() const;
 
     /**
      * Returns the decryption share for mk ckks
      *of real numbers using the secret-key.
      **/
-    plain_t decryption_share(const shared_ptr<SecretKey>& sk) const ;
-    vector<Plaintext> decryption_share2(const shared_ptr<SecretKey>& sk) const ;
+    vector<Plaintext> decryption_share() const ;
+    vector<Plaintext> decryption_share(const shared_ptr<SecretKey>& sk) const ;
 
 
     /**
@@ -80,6 +80,7 @@ class CKKSVector
      **/
     encrypted_t add_plain_inplace(const plain_t::dtype& to_add) override;
     encrypted_t add_plain_inplace(const plain_t& to_add) override;
+    encrypted_t add_share(Plaintext& to_add) const;
     encrypted_t add_share_inplace(Plaintext& to_add);
     encrypted_t sub_plain_inplace(const plain_t::dtype& to_sub) override;
     encrypted_t sub_plain_inplace(const plain_t& to_sub) override;

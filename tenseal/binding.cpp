@@ -339,26 +339,18 @@ void bind_ckks_vector(py::module &m) {
              [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
                  return obj->decrypt(sk).data();
              })
-        //.def("decrypt2",
-             //[](shared_ptr<CKKSVector> obj) { return obj->decrypt2().data(); })
-        .def("decrypt2",
-             [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
-                 return obj->decrypt2(sk).data();
-             })
+        .def("mk_decrypt",
+             [](shared_ptr<CKKSVector> obj) { return obj->mk_decrypt().data(); })
+        //.def("mk_decrypt",
+        //     [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
+        //         return obj->mk_decrypt(sk).data();
+        //     })
          //TODO correct no sk
-        //.def("decryption_share",
-             //[](shared_ptr<CKKSVector> obj) { return obj->decryption_share().data(); })
+        .def("decryption_share",
+             [](shared_ptr<CKKSVector> obj) { return obj->decryption_share()[0]; })
         .def("decryption_share",
              [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
-                 return obj->decryption_share(sk).data();
-             })
-        .def("decryption_share2",
-             [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
-                 return obj->decryption_share2(sk);
-             })
-        .def("add_share2",
-             [](shared_ptr<CKKSVector> obj,shared_ptr<Plaintext> &other) {
-                 return obj->add_share_inplace(*other.get());
+                 return obj->decryption_share(sk)[0];
              })
         .def("neg", &CKKSVector::negate)
         .def("neg_", &CKKSVector::negate_inplace)
@@ -368,7 +360,8 @@ void bind_ckks_vector(py::module &m) {
         .def("pow_", &CKKSVector::power_inplace)
         .def("add", &CKKSVector::add)
         .def("add_", &CKKSVector::add_inplace)
-        .def("add_share", &CKKSVector::add_share_inplace)
+        .def("add_share", &CKKSVector::add_share)
+        .def("add_share_", &CKKSVector::add_share_inplace)
         .def("add_plain", py::overload_cast<const double &>(
                               &CKKSVector::add_plain, py::const_))
         .def("add_plain",

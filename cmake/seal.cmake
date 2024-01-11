@@ -6,8 +6,9 @@ set(SEAL_USE_INTEL_HEXL OFF)
 
 FetchContent_Declare(
   com_microsoft_seal
-  GIT_REPOSITORY https://github.com/marielonfils/SEAL  #https://github.com/microsoft/SEAL
-  GIT_TAG        v4.1.1
+  #SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../SEAL
+  GIT_REPOSITORY https://github.com/marielonfils/SEAL
+  GIT_TAG        v4.1.1-mk_ckks
 )
 FetchContent_MakeAvailable(com_microsoft_seal)
 

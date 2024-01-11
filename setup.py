@@ -67,7 +67,7 @@ class CMakeBuild(build_ext):
         else:
             cmake_args += ["-DCMAKE_BUILD_TYPE=" + cfg]
             if "MAKEFLAGS" not in env:
-                build_args += ["--", "-j"]
+                build_args += ["--", "-j4"]
 
         env["CXXFLAGS"] = '{} -DVERSION_INFO=\\"{}\\"'.format(
             env.get("CXXFLAGS", ""), self.distribution.get_version()

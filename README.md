@@ -112,6 +112,10 @@ You can then trigger the build and the installation
 ```bash
 $ pip install .
 ```
+For an editable installation:
+```bash
+$ python -m pip install --no-build-isolation --verbose --editable .
+```
 
 #### Use Docker
 

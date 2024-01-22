@@ -96,6 +96,7 @@ class Context:
         coeff_mod_bit_sizes: List[int] = [],
         encryption_type: ENCRYPTION_TYPE = ENCRYPTION_TYPE.ASYMMETRIC,
         n_threads: int = None,
+        public_key: PublicKey = None,
         data: ts._ts_cpp.TenSEALContext = None,
     ):
         """Construct a context that holds keys and parameters needed for operating
@@ -148,6 +149,7 @@ class Context:
             coeff_mod_bit_sizes,
             encryption_type.value,
             n_threads,
+            public_key.data if public_key else None,
         )
 
     @property

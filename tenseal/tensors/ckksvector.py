@@ -32,17 +32,22 @@ class CKKSVector(AbstractTensor):
         else:
             
             if not isinstance(context, ts.Context):
-                raise TypeError("context must be a tenseal.Context")            
-            if not isinstance(vector,ts._ts_cpp.Ciphertext):
+                raise TypeError("context must be a tenseal.Context")  
+            if not isinstance(vector,ts.enc_context.PublicKey):
                 if not isinstance(vector, ts.PlainTensor):
                     vector = ts.plain_tensor(vector, dtype="float")
                 if len(vector.shape) != 1:
                     raise ValueError("can only encrypt a vector")
                 vector = vector.raw
-            if scale is None:
-                self.data = ts._ts_cpp.CKKSVector(context.data, vector)
+                if scale is None:
+                    self.data = ts._ts_cpp.CKKSVector(context.data, vector)
+                else:
+                    self.data = ts._ts_cpp.CKKSVector(context.data, vector, scale)
             else:
-                self.data = ts._ts_cpp.CKKSVector(context.data, vector, scale)
+                if scale is None:
+                    self.data = ts._ts_cpp.CKKSVector(context.data, vector.data)
+                else:
+                    self.data = ts._ts_cpp.CKKSVector(context.data, vector.data, scale)
 
     def scale(self) -> float:
         return self.data.scale()
@@ -50,11 +55,14 @@ class CKKSVector(AbstractTensor):
     def decrypt(self, secret_key: "ts.enc_context.SecretKey" = None) -> List[float]:
         return self._decrypt(secret_key=secret_key)
     
+    def decrypt2(self, secret_key: "ts.enc_context.SecretKey" = None) -> List[float]:
+        return self._decrypt2(secret_key=secret_key)
+    
     def mk_decrypt(self) -> List[float]:
         return self._mk_decrypt()
     
-    def decryption_share(self, secret_key: "ts.enc_context.SecretKey" = None)  -> List[float]:
-        return self._decryption_share(secret_key=secret_key)
+    def decryption_share(self, ctx, secret_key: "ts.enc_context.SecretKey" = None)  -> List[float]:
+        return self._decryption_share(ctx,secret_key=secret_key)
 
     def add_share(self, ds):
         return self._add_share(ds)

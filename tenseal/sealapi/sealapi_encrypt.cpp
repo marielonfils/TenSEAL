@@ -159,6 +159,7 @@ void bind_seal_encrypt_decrypt(pybind11::module &m) {
         .def("secret_key", &KeyGenerator::secret_key)
         .def("create_public_key",
              py::overload_cast<>(&KeyGenerator::create_public_key, py::const_))
+        .def("generate_b", &KeyGenerator::generate_b)
         .def("create_public_key",
              py::overload_cast<PublicKey &>(&KeyGenerator::create_public_key,
                                             py::const_))
@@ -305,6 +306,7 @@ void bind_seal_encrypt_decrypt(pybind11::module &m) {
                                                       py::module_local())
         .def(py::init<const SEALContext &, const SecretKey &>())
         .def("decrypt", &Decryptor::decrypt)
+        .def("decrypt2", &Decryptor::decrypt2)
         .def("decryption_share", &Decryptor::decryption_share)
         .def("invariant_noise_budget", &Decryptor::invariant_noise_budget);
     /***

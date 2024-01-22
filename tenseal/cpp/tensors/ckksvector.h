@@ -31,6 +31,7 @@ class CKKSVector
      *of real numbers using the secret-key.
      **/
     plain_t decrypt(const shared_ptr<SecretKey>& sk) const override;
+    plain_t decrypt2(const shared_ptr<SecretKey>& sk) const;
     plain_t mk_decrypt() const;
 
     /**
@@ -38,7 +39,7 @@ class CKKSVector
      *of real numbers using the secret-key.
      **/
     vector<Plaintext> decryption_share() const ;
-    vector<Plaintext> decryption_share(const shared_ptr<SecretKey>& sk) const ;
+    vector<Plaintext> decryption_share(shared_ptr<TenSEALContext>& ctx, const shared_ptr<SecretKey>& sk) const ;
 
 
     /**
@@ -80,8 +81,8 @@ class CKKSVector
      **/
     encrypted_t add_plain_inplace(const plain_t::dtype& to_add) override;
     encrypted_t add_plain_inplace(const plain_t& to_add) override;
-    encrypted_t add_share(Plaintext& to_add) const;
-    encrypted_t add_share_inplace(Plaintext& to_add);
+    encrypted_t add_share(vector<Plaintext>& to_add) const;
+    encrypted_t add_share_inplace(vector<Plaintext>& to_add);
     encrypted_t sub_plain_inplace(const plain_t::dtype& to_sub) override;
     encrypted_t sub_plain_inplace(const plain_t& to_sub) override;
     encrypted_t mul_plain_inplace(const plain_t::dtype& to_mul) override;
@@ -147,7 +148,7 @@ class CKKSVector
 
     CKKSVector(const shared_ptr<TenSEALContext>& ctx, const plain_t& vec,
                optional<double> scale = {});
-    CKKSVector(const shared_ptr<TenSEALContext>& ctx, const Ciphertext &vec,
+    CKKSVector(const shared_ptr<TenSEALContext>& ctx, const shared_ptr<PublicKey> &vec,
                optional<double> scale = {});
     CKKSVector(const shared_ptr<TenSEALContext>& ctx, const string& vec);
     CKKSVector(const string& vec);

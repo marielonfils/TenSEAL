@@ -53,7 +53,7 @@ void bind_context(py::module &m) {
             py::overload_cast<bool>(&TenSEALContext::auto_mod_switch))
         .def("new",
              py::overload_cast<scheme_type, size_t, uint64_t, vector<int>,
-                               encryption_type, optional<size_t>>(
+                               encryption_type, optional<size_t>, optional<PublicKey>>(
                  &TenSEALContext::Create),
              R"(Create a new TenSEALContext object to hold keys and parameters.
     Args:
@@ -312,14 +312,14 @@ void bind_ckks_vector(py::module &m) {
                             py::scoped_estream_redirect>())
         // specifying scale
         .def(py::init([](const shared_ptr<TenSEALContext> &ctx,
-                         const Ciphertext &data, double scale) {
+                         const shared_ptr<PublicKey> &data, double scale) {
                  return CKKSVector::Create(ctx, data, scale);
              }),
              py::call_guard<py::scoped_ostream_redirect,
                             py::scoped_estream_redirect>())
         // using global_scale if set
         .def(py::init([](const shared_ptr<TenSEALContext> &ctx,
-                         const Ciphertext &data) {
+                         const shared_ptr<PublicKey> &data) {
                  return CKKSVector::Create(ctx, data);
              }),
              py::call_guard<py::scoped_ostream_redirect,
@@ -339,13 +339,17 @@ void bind_ckks_vector(py::module &m) {
              [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
                  return obj->decrypt(sk).data();
              })
+        .def("decrypt2",
+             [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
+                 return obj->decrypt2(sk).data();
+             })
         .def("mk_decrypt",
              [](shared_ptr<CKKSVector> obj) { return obj->mk_decrypt().data(); })
+        //.def("decryption_share",
+             //[](shared_ptr<CKKSVector> obj) { return obj->decryption_share(); })
         .def("decryption_share",
-             [](shared_ptr<CKKSVector> obj) { return obj->decryption_share()[0]; })
-        .def("decryption_share",
-             [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
-                 return obj->decryption_share(sk)[0];
+             [](shared_ptr<CKKSVector> obj, shared_ptr<TenSEALContext> ctx, shared_ptr<SecretKey> &sk) {
+                 return obj->decryption_share(ctx,sk);
              })
         .def("neg", &CKKSVector::negate)
         .def("neg_", &CKKSVector::negate_inplace)

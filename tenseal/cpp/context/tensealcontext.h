@@ -52,7 +52,7 @@ class TenSEALContext {
         scheme_type scheme, size_t poly_modulus_degree, uint64_t plain_modulus,
         vector<int> coeff_mod_bit_sizes,
         encryption_type enc_type = encryption_type::asymmetric,
-        optional<size_t> n_threads = {});
+        optional<size_t> n_threads = {}, optional<PublicKey> public_key = {});
     /**
      * Create a context from an input stream.
      * @param[in] stream
@@ -167,13 +167,15 @@ class TenSEALContext {
     void decrypt(const Ciphertext& encrypted, Plaintext& destination) const;
     void decrypt(const SecretKey& sk, const Ciphertext& encrypted,
                  Plaintext& destination) const;
+    void decrypt2(const Ciphertext& encrypted, Plaintext& destination) const;
+    void decrypt2(const SecretKey& sk, const Ciphertext& encrypted,
+                 Plaintext& destination) const;
     void mk_decrypt(const Ciphertext& encrypted, Plaintext& destination) const;
 
     /**
      * Decryption share of a Ciphertext for MK_CKKS
      * */
-    void decryption_share(const Ciphertext& encrypted, Plaintext& destination) const;
-    void decryption_share(const SecretKey& sk, const Ciphertext& encrypted,
+    void decryption_share(TenSEALContext& ctx, const SecretKey& sk, const Ciphertext& encrypted,
                  Plaintext& destination) const;
     
 
@@ -305,7 +307,7 @@ class TenSEALContext {
         flag_auto_relin | flag_auto_rescale | flag_auto_mod_switch;
 
     TenSEALContext(EncryptionParameters parms, encryption_type,
-                   optional<size_t> n_threads);
+                   optional<size_t> n_threads, optional<PublicKey> public_key);
     TenSEALContext(istream& stream, optional<size_t> n_threads);
     TenSEALContext(const std::string& stream, optional<size_t> n_threads);
     TenSEALContext(const TenSEALContextProto& proto,
@@ -318,8 +320,12 @@ class TenSEALContext {
                     optional<SecretKey> secret_key = {},
                     bool generate_relin_keys = true,
                     bool generate_galois_keys = false,
-                    bool generate_secret_key = true);
+                    bool generate_secret_key = true,
+                    bool generate_b = false);
     void keys_setup_public_key(optional<PublicKey> public_key = {},
+                               optional<SecretKey> secret_key = {},
+                               bool generate_secret_key = true);
+    void keys_setup_public_key_mk_ckks(optional<PublicKey> public_key = {},
                                optional<SecretKey> secret_key = {},
                                bool generate_secret_key = true);
     void keys_setup_symmetric(optional<SecretKey> secret_key = {},

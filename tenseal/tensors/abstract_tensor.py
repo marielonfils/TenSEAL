@@ -88,27 +88,24 @@ class AbstractTensor(ABC):
         else:
             raise TypeError(f"incorrect type: {type(secret_key)} != SecretKey")
     
-    def _decrypt2(
-        self, secret_key: "ts.enc_context.SecretKey" = None
-    ) -> Union[ts._ts_cpp.PlainTensorDouble, ts._ts_cpp.PlainTensorInt64, List[float], List[int]]:
-        if secret_key is None:
-            return self.data.decrypt2()
-        elif isinstance(secret_key, ts.enc_context.SecretKey):
-            return self.data.decrypt2(secret_key.data)
-        else:
-            raise TypeError(f"incorrect type: {type(secret_key)} != SecretKey")
-
     def _mk_decrypt(
+        self, shares
+    ) -> Union[ts._ts_cpp.PlainTensorDouble, ts._ts_cpp.PlainTensorInt64, List[float], List[int]]:        
+        return self.data.mk_decrypt(shares)
+    
+    def _mk_decode(
         self
     ) -> Union[ts._ts_cpp.PlainTensorDouble, ts._ts_cpp.PlainTensorInt64, List[float], List[int]]:        
-        return self.data.mk_decrypt()
+        return self.data.mk_decode()
         
     def _decryption_share(
-        self, ctx, secret_key: "ts.enc_context.SecretKey" = None
+        self, ctx, secret_key: "ts.enc_context.SecretKey"
     ) -> Union[ts._ts_cpp.PlainTensorDouble, ts._ts_cpp.PlainTensorInt64, List[float], List[int]]:
-        #TOOD check if correct scheme type
+        #TODO check if correct scheme type
+        if ctx.parms().scheme() != ts._ts_cpp.SCHEME_TYPE.MK_CKKS :
+            raise TypeError("the encryption type should be MK_CKKS for decryption_share")
         if secret_key is None:
-            return self.data.decryption_share()#TODO
+            raise TypeError("the secret key should be provided")
         elif isinstance(secret_key, ts.enc_context.SecretKey):
             return self.data.decryption_share(ctx,secret_key.data)
         else:
@@ -116,7 +113,7 @@ class AbstractTensor(ABC):
     
     def _add_share(
         self, ds    ):
-        #TOOD check if correct scheme type
+        #TODO check if correct scheme type
         return self.data.add_share(ds)
     
     def _add_pk(self, pk):

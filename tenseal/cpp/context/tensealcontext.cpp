@@ -18,7 +18,6 @@ TenSEALContext::TenSEALContext(EncryptionParameters parms,
     if (!public_key){
         this->keys_setup(encryption_type);
     }else{
-        cout << "pk present"<< endl;
         if (parms.scheme() != scheme_type::mk_ckks){ // TODO
             throw invalid_argument("public key is only supported for mk_ckks public key setup");
         }
@@ -91,14 +90,11 @@ void TenSEALContext::keys_setup_public_key_mk_ckks(optional<PublicKey> public_ke
                                            optional<SecretKey> secret_key,
                                            bool generate_key) {
     
-    if (public_key && !secret_key && generate_key) {
+    if (public_key && !secret_key && generate_key) { //MK_CKKS public key settingS
         KeyGenerator keygen = KeyGenerator(*this->_context);
 
         auto pk = keygen.generate_b(false,public_key.value());
-        cout << "pk " << *pk.data().data(0) << " " << pk.data().data(1)<<endl;
-
         this->_public_key = make_shared<PublicKey>(pk);
-        cout << "this->pk " << *this->_public_key.get()->data().data(0) << " " << *this->_public_key.get()->data().data(1)<< endl;
         this->_secret_key = make_shared<SecretKey>(keygen.secret_key());
     }
 
@@ -112,7 +108,6 @@ void TenSEALContext::keys_setup_public_key_mk_ckks(optional<PublicKey> public_ke
     }
 
     if (this->_public_key){
-        cout << "this->pk " << *this->_public_key.get()->data().data(0) << " " << *this->_public_key.get()->data().data(1)<< endl;
         this->_encryptor =
             make_shared<Encryptor>(*this->_context, *this->_public_key);
         }
@@ -194,6 +189,10 @@ shared_ptr<TenSEALContext> TenSEALContext::Create(
             break;
         
         case scheme_type::mk_ckks:
+            if (encryption_type==encryption_type::symmetric){
+                throw invalid_argument("Symmetric encryption not supported for MK_CKKS");
+            }
+
             parms = create_mk_ckks_parameters(poly_modulus_degree,
                                            coeff_mod_bit_sizes);
             break;
@@ -265,13 +264,8 @@ void TenSEALContext::encrypt_zero(parms_id_type parms_id,
     }
 }
 void TenSEALContext::decrypt(const Ciphertext& encrypted,
-                             Plaintext& destination) const {
+                             Plaintext& destination) const {    
     return this->decryptor()->decrypt(encrypted, destination);
-}
-
-void TenSEALContext::decrypt2(const Ciphertext& encrypted,
-                             Plaintext& destination) const {
-    return this->decryptor()->decrypt2(encrypted, destination);
 }
 
 void TenSEALContext::decrypt(const SecretKey& sk, const Ciphertext& encrypted,
@@ -279,13 +273,6 @@ void TenSEALContext::decrypt(const SecretKey& sk, const Ciphertext& encrypted,
     Decryptor decryptor = Decryptor(*this->seal_context(), sk);
 
     return decryptor.decrypt(encrypted, destination);
-}
-
-void TenSEALContext::decrypt2(const SecretKey& sk, const Ciphertext& encrypted,
-                             Plaintext& destination) const {
-    Decryptor decryptor = Decryptor(*this->seal_context(), sk);
-
-    return decryptor.decrypt2(encrypted, destination);
 }
 
 void TenSEALContext::mk_decrypt(const Ciphertext& encrypted,

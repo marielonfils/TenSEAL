@@ -339,14 +339,10 @@ void bind_ckks_vector(py::module &m) {
              [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
                  return obj->decrypt(sk).data();
              })
-        .def("decrypt2",
-             [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
-                 return obj->decrypt2(sk).data();
-             })
         .def("mk_decrypt",
-             [](shared_ptr<CKKSVector> obj) { return obj->mk_decrypt().data(); })
-        //.def("decryption_share",
-             //[](shared_ptr<CKKSVector> obj) { return obj->decryption_share(); })
+             [](shared_ptr<CKKSVector> obj, vector<vector<Plaintext>> shares) { return obj->mk_decrypt(shares).data(); })
+        .def("mk_decode",
+             [](shared_ptr<CKKSVector> obj) { return obj->mk_decode().data(); })
         .def("decryption_share",
              [](shared_ptr<CKKSVector> obj, shared_ptr<TenSEALContext> ctx, shared_ptr<SecretKey> &sk) {
                  return obj->decryption_share(ctx,sk);

@@ -34,7 +34,6 @@ CKKSVector::CKKSVector(const shared_ptr<TenSEALContext>& ctx,
 
     this->_ciphertexts = vector<Ciphertext>();
     this->_sizes = vector<size_t>();
-    cout << "pk " << *ctx.get()->public_key()->data().data(0) <<" " << *ctx.get()->public_key()->data().data(0)<< endl;
     for (auto& chunk : vec_chunks) {
         // Encrypts the whole vector into a single ciphertext using CKKS
         // batching
@@ -131,71 +130,79 @@ CKKSVector::plain_t CKKSVector::decrypt(const shared_ptr<SecretKey>& sk) const {
     return result;
 }
 
-CKKSVector::plain_t CKKSVector::decrypt2(const shared_ptr<SecretKey>& sk) const {
+CKKSVector::plain_t CKKSVector::mk_decrypt(vector<vector<Plaintext>> &shares) const {
+    if (this->tenseal_context()->parms().scheme() != scheme_type::mk_ckks){
+        throw invalid_argument("unsupported scheme");
+    }
     vector<double> result;
     result.reserve(this->size());
 
-    for (size_t idx = 0; idx < this->_ciphertexts.size(); ++idx) {
+    //addition of shares
+    auto sum = this->add_share(shares[0]);
+    for (size_t i = 1; i < shares.size(); i++)
+    {
+        sum = sum->add_share(shares[i]);    
+    }
+    //transformation to plaintext
+    for (size_t idx = 0; idx < sum->_ciphertexts.size(); ++idx) {
         vector<double> partial_result;
-        partial_result.reserve(this->_sizes[idx]);
+        partial_result.reserve(sum->_sizes[idx]);
+        
         Plaintext plaintext;
-        this->tenseal_context()->decrypt2(*sk, this->_ciphertexts[idx],
-                                         plaintext);
+        this->tenseal_context()->mk_decrypt( sum->_ciphertexts[idx],
+                                        plaintext);
         this->tenseal_context()->decode<CKKSEncoder>(plaintext, partial_result);
 
         // result contains all slots of ciphertext (n/2), but we may be using
         // less we use the size to delimit the resulting plaintext vector
         auto partial_decr =
             vector<double>(partial_result.cbegin(),
-                           partial_result.cbegin() + this->_sizes[idx]);
+                        partial_result.cbegin() + this->_sizes[idx]);
         result.insert(result.end(), partial_decr.begin(), partial_decr.end());
     }
+    
 
     return result;
 }
 
-CKKSVector::plain_t CKKSVector::mk_decrypt() const {
+CKKSVector::plain_t CKKSVector::mk_decode() const {
+    if (this->tenseal_context()->parms().scheme() != scheme_type::mk_ckks){
+        throw invalid_argument("unsupported scheme");
+    }
+
     vector<double> result;
     result.reserve(this->size());
 
+    //transformation to plaintext
     for (size_t idx = 0; idx < this->_ciphertexts.size(); ++idx) {
         vector<double> partial_result;
         partial_result.reserve(this->_sizes[idx]);
+        
         Plaintext plaintext;
         this->tenseal_context()->mk_decrypt( this->_ciphertexts[idx],
-                                         plaintext);
+                                        plaintext);
         this->tenseal_context()->decode<CKKSEncoder>(plaintext, partial_result);
 
         // result contains all slots of ciphertext (n/2), but we may be using
         // less we use the size to delimit the resulting plaintext vector
         auto partial_decr =
             vector<double>(partial_result.cbegin(),
-                           partial_result.cbegin() + this->_sizes[idx]);
+                        partial_result.cbegin() + this->_sizes[idx]);
         result.insert(result.end(), partial_decr.begin(), partial_decr.end());
     }
+    
 
     return result;
 }
-
-/*vector<Plaintext> CKKSVector::decryption_share() const {
-        if (this->tenseal_context()->is_public()) {
-            // this->context was loaded with public keys only
-            throw invalid_argument(
-                "the current context of the tensor doesn't hold a secret_key, "
-                "please provide one as argument");
-        }
-        return this->decryption_share(&this->tenseal_context(),this->tenseal_context()->secret_key());
-    };  */  
     
 vector<Plaintext> CKKSVector::decryption_share(shared_ptr<TenSEALContext>& ctx, const shared_ptr<SecretKey>& sk) const {
     vector<Plaintext> result;
     result.reserve(this->size());
     for (size_t idx = 0; idx < this->_ciphertexts.size(); ++idx) {
-        Plaintext *plaintext = new Plaintext;
-        //cout << "sum " << *this->_ciphertexts[idx].data(0) << " " << *this->_ciphertexts[idx].data(1) << endl;
+        Plaintext plaintext;
         this->tenseal_context()->decryption_share(*ctx,*sk, this->_ciphertexts[idx],
-                                         *plaintext);
-        result.push_back(*plaintext);
+                                         plaintext);
+        result.push_back(plaintext);
     }
     return result;
 }
@@ -256,14 +263,10 @@ shared_ptr<CKKSVector> CKKSVector::add_inplace(
     }
 
     to_add = this->broadcast_or_throw(to_add);
-    //cout << "ciphertext size " << this->_ciphertexts.size() << " pk " << pk << endl;
     for (size_t idx = 0; idx < this->_ciphertexts.size(); ++idx) {
         this->auto_same_mod(to_add->_ciphertexts[idx], _ciphertexts[idx]);
-        //cout << "ciphertext " << *this->_ciphertexts[idx].data(0) << " " << *this->_ciphertexts[idx].data(1) << endl;
-        //cout << "to_add " << *to_add->_ciphertexts[idx].data(0) << " " << *to_add->_ciphertexts[idx].data(1) << endl;
         this->tenseal_context()->evaluator->add_inplace(
             this->_ciphertexts[idx], to_add->_ciphertexts[idx], pk);
-        //cout << "sum "  << *this->_ciphertexts[idx].data(0) << " " << *this->_ciphertexts[idx].data(1) << endl;
     }
     return shared_from_this();
 }
@@ -377,10 +380,8 @@ shared_ptr<CKKSVector> CKKSVector::add_share(vector<Plaintext>& to_add) const {
     };
 
 shared_ptr<CKKSVector> CKKSVector::add_share_inplace(vector<Plaintext>& to_add) {
-    //cout << "this->_cipher size " << this->_ciphertexts.size() << " len " << to_add.size()<< endl;
     for (size_t idx = 0; idx < this->_ciphertexts.size(); ++idx) {
         this->_add_share_inplace(this->_ciphertexts[idx], to_add[idx]);
-        cout << "decrypted2 " << *this->_ciphertexts[idx].data(0) << " " << *this->_ciphertexts[idx].data(1) << endl;
     }
     
     return shared_from_this();

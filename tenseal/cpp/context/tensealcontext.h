@@ -167,9 +167,6 @@ class TenSEALContext {
     void decrypt(const Ciphertext& encrypted, Plaintext& destination) const;
     void decrypt(const SecretKey& sk, const Ciphertext& encrypted,
                  Plaintext& destination) const;
-    void decrypt2(const Ciphertext& encrypted, Plaintext& destination) const;
-    void decrypt2(const SecretKey& sk, const Ciphertext& encrypted,
-                 Plaintext& destination) const;
     void mk_decrypt(const Ciphertext& encrypted, Plaintext& destination) const;
 
     /**

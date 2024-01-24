@@ -306,7 +306,6 @@ void bind_seal_encrypt_decrypt(pybind11::module &m) {
                                                       py::module_local())
         .def(py::init<const SEALContext &, const SecretKey &>())
         .def("decrypt", &Decryptor::decrypt)
-        .def("decrypt2", &Decryptor::decrypt2)
         .def("decryption_share", &Decryptor::decryption_share)
         .def("invariant_noise_budget", &Decryptor::invariant_noise_budget);
     /***

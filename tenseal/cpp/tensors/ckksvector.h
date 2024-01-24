@@ -31,8 +31,18 @@ class CKKSVector
      *of real numbers using the secret-key.
      **/
     plain_t decrypt(const shared_ptr<SecretKey>& sk) const override;
-    plain_t decrypt2(const shared_ptr<SecretKey>& sk) const;
-    plain_t mk_decrypt() const;
+
+    /**
+     * Decrypts and returns the plaintext representation of the encrypted vector
+     *of real numbers using the decryption shares. ONLY for MK_CKKS
+     **/
+    plain_t mk_decrypt(vector<vector<Plaintext>> &shares) const;
+
+    /**
+     * Decode and returns the plaintext representation of the encrypted vector
+     *of real numbers. ONLY for MK_CKKS (incremental decryption - shares already added)
+     **/
+    plain_t mk_decode() const;
 
     /**
      * Returns the decryption share for mk ckks

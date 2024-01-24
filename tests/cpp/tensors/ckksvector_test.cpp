@@ -122,7 +122,6 @@ TEST_P(CKKSVectorTest, TestCKKSMul) {
     ASSERT_THAT(mul->ciphertext_size(), ElementsAreArray({2}));
 
     auto decr = mul->decrypt();
-    std::cout << decr.at({0}) << std::endl;
     ASSERT_TRUE(are_close(decr.data(), {2, 4, 6}));
 
     l->mul_inplace(r);

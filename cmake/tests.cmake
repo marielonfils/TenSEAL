@@ -17,7 +17,8 @@ if(${BUILD_TEST})
       ${TENSEAL_TESTS_BASEDIR}/tensors/ckkstensor_test.cpp
       ${TENSEAL_TESTS_BASEDIR}/tensors/plaintensor_test.cpp
       ${TENSEAL_TESTS_BASEDIR}/tensors/bfvvector_test.cpp
-      ${TENSEAL_TESTS_BASEDIR}/tensors/bfvtensor_test.cpp)
+      ${TENSEAL_TESTS_BASEDIR}/tensors/bfvtensor_test.cpp
+      ${TENSEAL_TESTS_BASEDIR}/tensors/mkckksvector_test.cpp)
   add_executable(tenseal_tests ${TESTING_SOURCES} ${SOURCES})
   target_link_libraries(tenseal_tests PRIVATE gtest gtest_main seal)
   target_link_libraries(tenseal_tests PRIVATE tenseal tenseal_proto)

@@ -7,7 +7,7 @@ set(SEAL_USE_INTEL_HEXL OFF)
 FetchContent_Declare(
   com_microsoft_seal
   GIT_REPOSITORY https://github.com/marielonfils/SEAL
-  GIT_TAG        v4.1.1-mk_ckks
+  GIT_TAG        v4.1.1-xmk_ckks
 )
 FetchContent_MakeAvailable(com_microsoft_seal)
 

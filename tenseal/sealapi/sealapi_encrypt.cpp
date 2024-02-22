@@ -312,6 +312,17 @@ void bind_seal_encrypt_decrypt(pybind11::module &m) {
      * } "seal/decryptor.h"
      *******************/
 
+     /*******************
+     * "seal/mkdecryptor.h" {
+     ***/
+    py::class_<MKDecryptor, std::shared_ptr<MKDecryptor>>(m, "MKDecryptor",
+                                                      py::module_local())
+        .def(py::init<const SEALContext &>())
+        .def("decrypt", &MKDecryptor::decrypt);
+    /***
+     * } "seal/mkdecryptor.h"
+     *******************/
+
     /*******************
      * "seal/encryptor.h" {
      ***/

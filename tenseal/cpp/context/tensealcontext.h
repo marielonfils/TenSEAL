@@ -155,6 +155,7 @@ class TenSEALContext {
      **/
     shared_ptr<Encryptor> encryptor() const;
     shared_ptr<Decryptor> decryptor() const;
+    shared_ptr<MKDecryptor> mk_decryptor() const;
     /**
      * Encrypt a Plaintext to a Ciphertext
      * */
@@ -287,6 +288,7 @@ class TenSEALContext {
 
     shared_ptr<Encryptor> _encryptor = nullptr;
     shared_ptr<Decryptor> _decryptor = nullptr;
+    shared_ptr<MKDecryptor> _mkdecryptor = nullptr;
     shared_ptr<sync::ThreadPool> _dispatcher = nullptr;
 
     size_t _threads;

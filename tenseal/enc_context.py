@@ -86,6 +86,8 @@ class Encryptor(SEALPrimitive):
 class Decryptor(SEALPrimitive):
     pass
 
+class MKDecryptor(SEALPrimitive):
+    pass
 
 class Context:
     def __init__(
@@ -289,6 +291,9 @@ class Context:
 
     def decryptor(self) -> Decryptor:
         return Decryptor(self.data.decryptor())
+    
+    def mk_decryptor(self) -> MKDecryptor:
+        return MKDecryptor(self.data.mk_decryptor())
 
     def make_context_public(
         self, generate_galois_keys: bool = False, generate_relin_keys: bool = False

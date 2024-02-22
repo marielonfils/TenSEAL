@@ -70,6 +70,7 @@ void bind_context(py::module &m) {
         .def("seal_context", &TenSEALContext::seal_context)
         .def("encryptor", &TenSEALContext::encryptor)
         .def("decryptor", &TenSEALContext::decryptor)
+        .def("mk_decryptor", &TenSEALContext::mk_decryptor)
         .def("public_key", &TenSEALContext::public_key)
         .def("has_public_key", &TenSEALContext::has_public_key)
         .def("secret_key", &TenSEALContext::secret_key)

@@ -61,6 +61,9 @@ Ciphertext = _sealapi_cpp.Ciphertext
 ## seal/decryptor.h ##
 Decryptor = _sealapi_cpp.Decryptor
 
+## seal/mkdecryptor.h ##
+MKDecryptor = _sealapi_cpp.MKDecryptor
+
 ## seal/encryptor.h ##
 Encryptor = _sealapi_cpp.Encryptor
 

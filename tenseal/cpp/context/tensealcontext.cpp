@@ -85,6 +85,10 @@ void TenSEALContext::keys_setup_public_key(optional<PublicKey> public_key,
     if (this->_public_key)
         this->_encryptor =
             make_shared<Encryptor>(*this->_context, *this->_public_key);
+            
+    if (this->_parms.scheme() == scheme_type::mk_ckks){
+        this->_mkdecryptor = make_shared<MKDecryptor>(*this->_context);
+    }
 }
 void TenSEALContext::keys_setup_public_key_mk_ckks(optional<PublicKey> public_key,
                                            optional<SecretKey> secret_key,
@@ -230,6 +234,14 @@ shared_ptr<Decryptor> TenSEALContext::decryptor() const {
     return this->_decryptor;
 }
 
+shared_ptr<MKDecryptor> TenSEALContext::mk_decryptor() const{
+    if (this->_mkdecryptor == nullptr) {
+        throw invalid_argument("this context doesn't support decryption");
+    }
+
+    return this->_mkdecryptor;
+}
+
 void TenSEALContext::encrypt(const Plaintext& plain,
                              Ciphertext& destination) const {
     switch (this->_encryption_type) {
@@ -277,12 +289,11 @@ void TenSEALContext::decrypt(const SecretKey& sk, const Ciphertext& encrypted,
 
 void TenSEALContext::mk_decrypt(const Ciphertext& encrypted,
                              Plaintext& destination) const {
-    return this->decryptor()->decrypt(encrypted, destination);
+    return this->mk_decryptor()->decrypt(encrypted, destination);
 }
 
 void TenSEALContext::decryption_share(TenSEALContext& ctx, const SecretKey& sk, const Ciphertext& encrypted,
                              Plaintext& destination) const {
-    //Decryptor decryptor = Decryptor(*this->seal_context(), sk);
     Decryptor decryptor = Decryptor(*ctx.seal_context().get(),sk);
 
     return decryptor.decryption_share(encrypted, destination);
@@ -498,6 +509,9 @@ void TenSEALContext::load_proto_public_key(const TenSEALContextProto& buffer) {
     if (buffer.public_context().scale() >= 0) {
         this->global_scale(buffer.public_context().scale());
     }
+    if (this->_parms.scheme() == scheme_type::mk_ckks){
+        this->_mkdecryptor = make_shared<MKDecryptor>(*this->_context);
+    }
 
     optional<PublicKey> public_key = {};
     if (!buffer.public_context().public_key().empty()) {
@@ -561,7 +575,8 @@ void TenSEALContext::load_proto_symmetric(const TenSEALContextProto& buffer) {
 void TenSEALContext::load_proto(const TenSEALContextProto& buffer) {
     switch (buffer.encryption_type()) {
         case to_underlying(encryption_type::asymmetric):
-            return this->load_proto_public_key(buffer);
+            this->load_proto_public_key(buffer);
+            return;
         case to_underlying(encryption_type::symmetric):
             return this->load_proto_symmetric(buffer);
         default:

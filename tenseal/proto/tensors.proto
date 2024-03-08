@@ -40,3 +40,11 @@ message CKKSTensorProto {
     // Optional batch size. Exists only if batching is enabled
     uint32 batch_size = 4;
 };
+
+//PlaintextVector parameters
+message PlaintextVectorProto {
+    // The size of the chunks of the plaintexts vector
+    repeated uint32 sizes = 1;
+    // The serialized plaintexts
+    repeated bytes plaintexts = 2;
+};

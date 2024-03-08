@@ -13,6 +13,7 @@ cc_library(
         "ckksvector.cpp",
         "utils/utils.cpp",
         "utils/utils.h",
+        "plaintextvector.cpp",
     ],
     hdrs = [
         "api.h",
@@ -23,6 +24,7 @@ cc_library(
         "encrypted_tensor.h",
         "encrypted_vector.h",
         "plain_tensor.h",
+        "plaintextvector.h",
     ],
     copts = TENSEAL_DEFAULT_COPTS,
     includes = TENSEAL_DEFAULT_INCLUDES,

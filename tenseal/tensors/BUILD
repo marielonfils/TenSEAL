@@ -10,6 +10,7 @@ py_library(
         "ckkstensor.py",
         "ckksvector.py",
         "plaintensor.py",
+        "plaintextvector.py",
     ],
     data = ["//tenseal:_tenseal_cpp.so"],
     srcs_version = "PY3",

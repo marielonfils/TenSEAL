@@ -908,6 +908,282 @@ void bind_bfv_tensor(py::module &m) {
         .def("transpose_", &BFVTensor::transpose_inplace);
 }
 
+void bind_plaintext_vector(py::module &m) {
+
+    py::class_<PlaintextVector, std::shared_ptr<PlaintextVector>>(m, "PlaintextVector",
+                                                        py::module_local())
+        // specifying scale
+        .def(py::init([](const vector<Plaintext>& vec) {
+                 return PlaintextVector::Create(vec);
+             }),
+             py::call_guard<py::scoped_ostream_redirect,
+                            py::scoped_estream_redirect>())
+        // using global_scale if set
+        .def(py::init([](const shared_ptr<PlaintextVector> &vec) {
+                 return PlaintextVector::Create(vec);
+             }),
+             py::call_guard<py::scoped_ostream_redirect,
+                            py::scoped_estream_redirect>())
+        .def(py::init([](const shared_ptr<TenSEALContext> &ctx,
+                         const std::string &vec) {
+                 return PlaintextVector::Create(ctx, vec);
+             }),
+             py::call_guard<py::scoped_ostream_redirect,
+                            py::scoped_estream_redirect>())
+        // specifying scale
+        .def(py::init([](const shared_ptr<TenSEALContext> &ctx,
+                         const PlaintextVectorProto vec) {
+                 return PlaintextVector::Create(ctx, vec);
+             }),
+             py::call_guard<py::scoped_ostream_redirect,
+                            py::scoped_estream_redirect>())
+        // using global_scale if set
+        .def(py::init([](const TenSEALContextProto &ctx,
+                         const PlaintextVectorProto&data) {
+                 return PlaintextVector::Create(ctx, data);
+             }),
+             py::call_guard<py::scoped_ostream_redirect,
+                            py::scoped_estream_redirect>())
+        //.def(py::init(
+        //    [](const std::string &data) { return CKKSVector::Create(data); }))
+        //.def("size", py::overload_cast<>(&CKKSVector::size, py::const_))
+        //.def("decrypt",
+        //     [](shared_ptr<CKKSVector> obj) { return obj->decrypt().data(); })
+        //.def("decrypt",
+        //     [](shared_ptr<CKKSVector> obj, const shared_ptr<SecretKey> &sk) {
+        //         return obj->decrypt(sk).data();
+        //     })
+        //.def("mk_decrypt",
+        //     [](shared_ptr<CKKSVector> obj, vector<vector<Plaintext>> shares) { return obj->mk_decrypt(shares).data(); })
+        //.def("mk_decode",
+        //     [](shared_ptr<CKKSVector> obj) { return obj->mk_decode().data(); })
+        //.def("decryption_share",
+        //     [](shared_ptr<CKKSVector> obj, shared_ptr<TenSEALContext> ctx, shared_ptr<SecretKey> &sk) {
+        //         return obj->decryption_share(ctx,sk);
+        //     })
+        //.def("neg", &CKKSVector::negate)
+        //.def("neg_", &CKKSVector::negate_inplace)
+        //.def("square", &CKKSVector::square)
+        //.def("square_", &CKKSVector::square_inplace)
+        //.def("pow", &CKKSVector::power)
+        //.def("pow_", &CKKSVector::power_inplace)
+        //.def("add", &CKKSVector::add)
+        //.def("add_", &CKKSVector::add_inplace)
+        //.def("add_share", &CKKSVector::add_share)
+        //.def("add_share_", &CKKSVector::add_share_inplace)
+        //.def("add_plain", py::overload_cast<const double &>(
+        //                      &CKKSVector::add_plain, py::const_))
+        //.def("add_plain",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->add_plain(other);
+        //     })
+        //.def("add_plain_",
+        //     py::overload_cast<const double &>(&CKKSVector::add_plain_inplace))
+        //.def("add_plain_",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->add_plain_inplace(other);
+        //     })
+        //.def("sub", &CKKSVector::sub)
+        //.def("sub_", &CKKSVector::sub_inplace)
+        //.def("sub_plain", py::overload_cast<const double &>(
+        //                      &CKKSVector::sub_plain, py::const_))
+        //.def("sub_plain",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->sub_plain(other);
+        //     })
+        //.def("sub_plain_",
+        //     py::overload_cast<const double &>(&CKKSVector::sub_plain_inplace))
+        //.def("sub_plain_",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->sub_plain_inplace(other);
+        //     })
+        //.def("mul", &CKKSVector::mul)
+        //.def("mul_", &CKKSVector::mul_inplace)
+        //.def("mul_plain", py::overload_cast<const double &>(
+        //                      &CKKSVector::mul_plain, py::const_))
+        //.def("mul_plain",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->mul_plain(other);
+        //     })
+        //.def("mul_plain_",
+        //     py::overload_cast<const double &>(&CKKSVector::mul_plain_inplace))
+        //.def("mul_plain_",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->mul_plain_inplace(other);
+        //     })
+        //.def("polyval", &CKKSVector::polyval)
+        //.def("polyval_", &CKKSVector::polyval_inplace)
+        //// because dot doesn't have a magic function like __add__
+        //// we prefer to overload it instead of having dot_plain functions
+        //.def("dot", &CKKSVector::dot)
+        //.def("dot", &CKKSVector::dot_plain)
+        //.def("dot_", &CKKSVector::dot_inplace)
+        //.def("dot_", &CKKSVector::dot_plain_inplace)
+        //.def("sum", &CKKSVector::sum, py::arg("axis") = 0)
+        //.def("sum_", &CKKSVector::sum_inplace, py::arg("axis") = 0)
+        //.def("matmul", &CKKSVector::matmul_plain)
+        //.def("matmul_", &CKKSVector::matmul_plain_inplace)
+        //.def("mm", &CKKSVector::matmul_plain)
+        //.def("mm_", &CKKSVector::matmul_plain_inplace)
+        //.def("conv2d_im2col",
+        //     [](shared_ptr<CKKSVector> obj,
+        //        const vector<vector<double>> &matrix, const size_t windows_nb) {
+        //         return obj->conv2d_im2col(matrix, windows_nb);
+        //     })
+        //.def("conv2d_im2col_",
+        //     [](shared_ptr<CKKSVector> obj,
+        //        const vector<vector<double>> &matrix, const size_t windows_nb) {
+        //         return obj->conv2d_im2col_inplace(matrix, windows_nb);
+        //     })
+        //.def("enc_matmul_plain",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &matrix,
+        //        size_t row_size) {
+        //         return obj->enc_matmul_plain(matrix, row_size);
+        //     })
+        //.def("enc_matmul_plain_",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &matrix,
+        //        size_t row_size) {
+        //         return obj->enc_matmul_plain_inplace(matrix, row_size);
+        //     })
+        //// python arithmetic
+        //.def("__neg__", &CKKSVector::negate)
+        //.def("__pow__", &CKKSVector::power)
+        //.def("__ipow__", &CKKSVector::power_inplace)
+        //.def("__add__", &CKKSVector::add)
+        //.def("__add__", py::overload_cast<const double &>(
+        //                    &CKKSVector::add_plain, py::const_))
+        //.def("__add__",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->add_plain(other);
+        //     })
+        //.def("__radd__", py::overload_cast<const double &>(
+        //                     &CKKSVector::add_plain, py::const_))
+        //.def("__radd__",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->add_plain(other);
+        //     })
+        //.def("__iadd__", &CKKSVector::add_inplace)
+        //.def("__iadd__",
+        //     py::overload_cast<const double &>(&CKKSVector::add_plain_inplace))
+        //.def("__iadd__",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->add_plain_inplace(other);
+        //     })
+        //.def("__sub__", &CKKSVector::sub)
+        //.def("__sub__", py::overload_cast<const double &>(
+        //                    &CKKSVector::sub_plain, py::const_))
+        //.def("__sub__",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->sub_plain(other);
+        //     })
+        ///*
+        //Since subtraction operation is anticommutative, right subtraction
+        //operator need to negate the vector then do an addition with left
+        //operand.
+        //*/
+        //.def("__rsub__",
+        //     [](shared_ptr<CKKSVector> other, const double left_operand) {
+        //         // vec should be a copy so it might be safe to do inplace
+        //         auto vec = other->copy();
+        //         vec->negate_inplace();
+        //         vec->add_plain_inplace(left_operand);
+        //         return vec;
+        //     })
+        //.def("__rsub__",
+        //     [](shared_ptr<CKKSVector> other,
+        //        const vector<double> &left_operand) {
+        //         // vec should be a copy so it might be safe to do inplace
+        //         auto vec = other->copy();
+        //         vec->negate_inplace();
+        //         vec->add_plain_inplace(left_operand);
+        //         return vec;
+        //     })
+        //.def("__isub__", &CKKSVector::sub_inplace)
+        //.def("__isub__",
+        //     py::overload_cast<const double &>(&CKKSVector::sub_plain_inplace))
+        //.def("__isub__",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->sub_plain_inplace(other);
+        //     })
+        //.def("__mul__", &CKKSVector::mul)
+        //.def("__mul__", py::overload_cast<const double &>(
+        //                    &CKKSVector::mul_plain, py::const_))
+        //.def("__mul__",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->mul_plain(other);
+        //     })
+        //.def("__rmul__", py::overload_cast<const double &>(
+        //                     &CKKSVector::mul_plain, py::const_))
+        //.def("__rmul__",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->mul_plain(other);
+        //     })
+        //.def("__imul__", &CKKSVector::mul_inplace)
+        //.def("__imul__",
+        //     py::overload_cast<const double &>(&CKKSVector::mul_plain_inplace))
+        //.def("__imul__",
+        //     [](shared_ptr<CKKSVector> obj, const vector<double> &other) {
+        //         return obj->mul_plain_inplace(other);
+        //     })
+        //.def("__matmul__", &CKKSVector::matmul_plain)
+        //.def("__imatmul__", &CKKSVector::matmul_plain_inplace)
+        //.def("context", &CKKSVector::tenseal_context)
+        //.def("link_context", &CKKSVector::link_tenseal_context)
+        .def("serialize",
+             [](shared_ptr<PlaintextVector> obj) { return py::bytes(obj->save()); })
+        .def("copy", &PlaintextVector::copy) //TODO deepcopy
+        .def("__copy__",
+             [](shared_ptr<PlaintextVector> obj) { return obj->copy(); })
+        //.def("__deepcopy__", [](shared_ptr<CKKSVector> obj,
+        //                        py::dict) { return obj->deepcopy(); })
+        .def("plaintext",
+             py::overload_cast<>(&PlaintextVector::plaintext, py::const_))
+     ;
+        //.def_static(
+        //    "pack_vectors", [](const vector<shared_ptr<CKKSVector>> &vectors) {
+        //        return pack_vectors<CKKSVector, CKKSEncoder, double>(vectors);
+        //    });
+
+     /*m.def("im2col_encoding",
+          [](shared_ptr<TenSEALContext> ctx, vector<vector<double>> &raw_input,
+             const size_t kernel_n_rows, const size_t kernel_n_cols,
+             const size_t stride) {
+              vector<vector<double>> view_as_window;
+
+              PlainTensor<double> input(raw_input);
+              size_t windows_nb = input.im2col(view_as_window, kernel_n_rows,
+                                               kernel_n_cols, stride);
+
+              PlainTensor<double> view_as_window_tensor(view_as_window);
+              auto final_vector = view_as_window_tensor.vertical_scan();
+
+              auto ckks_vector = CKKSVector::Create(ctx, final_vector);
+              return make_pair(ckks_vector, windows_nb);
+          });
+
+    m.def("enc_matmul_encoding", [](shared_ptr<TenSEALContext> ctx,
+                                    const vector<vector<double>> &input) {
+        vector<vector<double>> padded_matrix;
+        padded_matrix.reserve(input.size());
+        // calculate the next power of 2
+        size_t plain_vec_size =
+            1 << (static_cast<size_t>(ceil(log2(input[0].size()))));
+
+        for (size_t i = 0; i < input.size(); i++) {
+            // pad the row to the next power of 2
+            vector<double> row(plain_vec_size, 0);
+            copy(input[i].begin(), input[i].end(), row.begin());
+            padded_matrix.push_back(row);
+        }
+
+        PlainTensor<double> padded_tensor(padded_matrix);
+        auto final_vector = padded_tensor.vertical_scan();
+
+        return CKKSVector::Create(ctx, final_vector);
+    });*/
+}
+
+
 PYBIND11_MODULE(_tenseal_cpp, m) {
     m.doc() = "Library for doing homomorphic encryption operations on tensors";
 
@@ -924,4 +1200,6 @@ PYBIND11_MODULE(_tenseal_cpp, m) {
     bind_ckks_vector(m);
     bind_ckks_tensor(m);
     bind_bfv_tensor(m);
+
+     bind_plaintext_vector(m);
 }

@@ -11,3 +11,4 @@ from tenseal.tensors.ckksvector import CKKSVector
 from tenseal.tensors.bfvvector import BFVVector
 from tenseal.tensors.bfvtensor import BFVTensor
 from tenseal.tensors.plaintensor import PlainTensor
+from tenseal.tensors.plaintextvector import PlaintextVector

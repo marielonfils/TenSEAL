@@ -19,7 +19,8 @@ set(SOURCES
     ${TENSEAL_BASEDIR}/cpp/tensors/bfvtensor.cpp
     ${TENSEAL_BASEDIR}/cpp/tensors/ckkstensor.cpp
     ${TENSEAL_BASEDIR}/cpp/tensors/ckksvector.cpp
-    ${TENSEAL_BASEDIR}/cpp/tensors/utils/utils.cpp)
+    ${TENSEAL_BASEDIR}/cpp/tensors/utils/utils.cpp
+    ${TENSEAL_BASEDIR}/cpp/tensors/plaintextvector.cpp)
 
 add_library(tenseal SHARED ${SOURCES})
 pybind11_add_module(_tenseal_cpp ${SEALAPI_SOURCES} ${SOURCES} ${TENSEAL_BASEDIR}/binding.cpp)

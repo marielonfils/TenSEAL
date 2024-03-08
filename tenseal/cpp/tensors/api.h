@@ -9,5 +9,6 @@
 #include "tenseal/cpp/tensors/encrypted_vector.h"
 #include "tenseal/cpp/tensors/plain_tensor.h"
 #include "tenseal/cpp/tensors/utils/utils.h"
+#include "tenseal/cpp/tensors/plaintextvector.h"
 
 #endif

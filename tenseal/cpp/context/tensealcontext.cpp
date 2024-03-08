@@ -115,6 +115,7 @@ void TenSEALContext::keys_setup_public_key_mk_ckks(optional<PublicKey> public_ke
         this->_encryptor =
             make_shared<Encryptor>(*this->_context, *this->_public_key);
         }
+    this->_mkdecryptor = make_shared<MKDecryptor>(*this->_context);
 }
 
 void TenSEALContext::keys_setup_symmetric(optional<SecretKey> secret_key,
@@ -228,6 +229,7 @@ shared_ptr<Encryptor> TenSEALContext::encryptor() const {
 
 shared_ptr<Decryptor> TenSEALContext::decryptor() const {
     if (this->_decryptor == nullptr) {
+        cout << "decryptor is null" <<endl;
         throw invalid_argument("this context doesn't support decryption");
     }
 
@@ -236,6 +238,7 @@ shared_ptr<Decryptor> TenSEALContext::decryptor() const {
 
 shared_ptr<MKDecryptor> TenSEALContext::mk_decryptor() const{
     if (this->_mkdecryptor == nullptr) {
+        cout << "mkdecryptor is null" <<endl;
         throw invalid_argument("this context doesn't support decryption");
     }
 

@@ -1,0 +1,9 @@
+cff-version: 1.0.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "LONFILS"
+  given-names: "MARIE"
+title: "TenSEAL_xMK-CKKS"
+version: 1.0.0
+date-released: 2024-06-19
+url: "https://github.com/marielonfils/TenSEAL"
